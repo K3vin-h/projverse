@@ -28,7 +28,7 @@ export default function Navbar() {
               <Code2 className="h-4 w-4 text-white" />
             </div>
             <span className="text-lg font-bold tracking-tight text-white">
-              Dev<span className="text-blue-400">Gallery</span>
+              Proj<span className="text-blue-400">verse</span>
             </span>
           </Link>
 

@@ -10,7 +10,7 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
-  title: "DevGallery – Developer Project Showcase",
+  title: "Projverse – Developer Project Showcase",
   description:
     "Discover, share, and showcase developer projects. A community-driven platform for developers to exhibit their work.",
   keywords: ["developer", "projects", "portfolio", "showcase", "open source"],

@@ -1,13 +1,7 @@
 import Link from "next/link";
 import { prisma } from "@/lib/prisma";
 import ProjectGrid from "@/components/ProjectGrid";
-import {
-  ArrowRight,
-  Sparkles,
-  TrendingUp,
-  Users,
-  Zap,
-} from "lucide-react";
+import { ArrowRight, Sparkles, TrendingUp, Users, Zap } from "lucide-react";
 
 export default async function HomePage() {
   let trendingProjects: Array<{
@@ -63,11 +57,11 @@ export default async function HomePage() {
       prisma.user.count(),
     ]);
 
-    trendingProjects = trending.map((p: typeof trending[number]) => ({
+    trendingProjects = trending.map((p: (typeof trending)[number]) => ({
       ...p,
       createdAt: p.createdAt.toISOString(),
     }));
-    recentProjects = recent.map((p: typeof recent[number]) => ({
+    recentProjects = recent.map((p: (typeof recent)[number]) => ({
       ...p,
       createdAt: p.createdAt.toISOString(),
     }));
@@ -228,7 +222,7 @@ export default async function HomePage() {
       <footer className="border-t border-white/[0.04] py-8">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row items-center justify-between gap-4">
           <p className="text-xs text-zinc-600">
-            © 2024 DevGallery. Built for developers, by developers.
+            © 2024 Projverse . Built for developers, by developers.
           </p>
           <div className="flex items-center gap-6">
             <Link
