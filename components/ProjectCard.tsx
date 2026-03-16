@@ -54,7 +54,7 @@ export default function ProjectCard({ project }: ProjectCardProps) {
     <Link href={`/projects/${project.id}`} className="group block">
       <div className="relative rounded-2xl border border-white/[0.06] bg-[#111116] overflow-hidden transition-all duration-300 hover:border-white/[0.12] hover:bg-[#141419] hover:shadow-2xl hover:shadow-blue-500/5 hover:-translate-y-1">
         {/* Screenshot or gradient header */}
-        //if the project has a screenshot, display it, otherwise display a gradient header
+        {/*if the project has a screenshot, display it, otherwise display a gradient header*/}
         {project.screenshots?.[0] ? (
           <div className="relative h-44 overflow-hidden">
             <img
@@ -65,8 +65,9 @@ export default function ProjectCard({ project }: ProjectCardProps) {
             <div className="absolute inset-0 bg-gradient-to-t from-[#111116] via-transparent" />
           </div>
         ) : (
-          //this is the gradient header, if no screenshot is available, display a gradient header with the first letter of the project name
           <div className="relative h-44 bg-gradient-to-br from-blue-600/20 via-violet-600/20 to-indigo-600/20 flex items-center justify-center">
+            {/*this is the gradient header, if no screenshot is available, display a gradient header with the first letter of the project name*/}
+
             <div className="text-4xl font-bold text-white/10">
               {project.name[0]}
             </div>
@@ -76,7 +77,7 @@ export default function ProjectCard({ project }: ProjectCardProps) {
 
         <div className="p-5">
           {/* Languages */}
-          //display the languages, if there are no languages, display a message saying no languages
+          {/*display the languages, if there are no languages, display a message saying no languages*/}
           {project.languages.length > 0 && (
             <div className="flex flex-wrap gap-2 mb-3">
               {project.languages.slice(0, 3).map((lang) => (
@@ -94,21 +95,18 @@ export default function ProjectCard({ project }: ProjectCardProps) {
               ))}
             </div>
           )}
-
           {/* Title */}
-          //display the title of the project
+          {/*display the title of the project*/}
           <h3 className="text-base font-semibold text-white mb-2 group-hover:text-blue-400 transition-colors line-clamp-1">
             {project.name}
           </h3>
-
           {/* Description */}
-          //display the description of the project
+          {/*display the description of the project*/}
           <p className="text-sm text-zinc-500 mb-4 line-clamp-2">
             {truncate(project.description, 120)}
           </p>
-
           {/* Tags */}
-          //display the tags, if there are no tags, display a message saying no tags
+          {/*display the tags, if there are no tags, display a message saying no tags*/}
           {project.tags.length > 0 && (
             <div className="flex flex-wrap gap-1.5 mb-4">
               {project.tags.slice(0, 3).map((tag) => (
@@ -126,9 +124,8 @@ export default function ProjectCard({ project }: ProjectCardProps) {
               )}
             </div>
           )}
-
           {/* Footer */}
-          //display the footer, it includes the author and the creation date
+          {/*display the footer, it includes the author and the creation date*/}
           <div className="flex items-center justify-between pt-3 border-t border-white/[0.06]">
             <div className="flex items-center gap-2">
               <div className="h-6 w-6 rounded-full bg-gradient-to-br from-blue-500 to-violet-600 flex items-center justify-center text-[10px] font-bold text-white">
@@ -154,9 +151,10 @@ export default function ProjectCard({ project }: ProjectCardProps) {
               </span>
             </div>
           </div>
-
           {/* External links */}
-          //display the external links, if there are no external links, display a message saying no external links, stop propagation to prevent the card from being clicked
+          {/*display the external links, if there are no external links, display
+          a message saying no external links, stop propagation to prevent the
+          card from being clicked*/}
           {(project.repoUrl || project.demoUrl) && (
             <div className="flex items-center gap-2 mt-3 pt-3 border-t border-white/[0.06]">
               {project.repoUrl && (

@@ -39,14 +39,12 @@ export default function CommitTimeline({ repoUrl }: CommitTimelineProps) {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const match = repoUrl.match(
-          /github\.com\/([^/]+)\/([^/]+)/
-        );
+        const match = repoUrl.match(/github\.com\/([^/]+)\/([^/]+)/);
         if (!match) {
           setError("Invalid GitHub URL");
           return;
         }
-//extract the owner and repo from the match
+        //extract the owner and repo from the match
         const [, owner, repo] = match;
         const res = await fetch(`/api/github/${owner}/${repo}`);
         if (!res.ok) throw new Error("Failed to fetch");
@@ -63,8 +61,8 @@ export default function CommitTimeline({ repoUrl }: CommitTimelineProps) {
   }, [repoUrl]);
 
   if (loading) {
+    //this is the loading state, it is used to display the loading state while fetching the data
     return (
-      //this is the loading state, it is used to display the loading state while fetching the data
       <div className="rounded-2xl border border-white/[0.06] bg-[#111116] p-6">
         <div className="animate-pulse space-y-4">
           <div className="h-4 w-40 bg-white/[0.06] rounded" />
@@ -87,11 +85,11 @@ export default function CommitTimeline({ repoUrl }: CommitTimelineProps) {
   if (error || !data) {
     return null;
   }
-
+  //this is the commit timeline, it is used to display the commits of the repository
   return (
-    //this is the commit timeline, it is used to display the commits of the repository
     <div className="space-y-6">
       {/* Repo Stats */}
+      {/*display the repo stats*/}
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
         {[
           { label: "Stars", value: data.stars.toLocaleString(), icon: "⭐" },
@@ -119,7 +117,7 @@ export default function CommitTimeline({ repoUrl }: CommitTimelineProps) {
       </div>
 
       {/* Language Breakdown */}
-      //display the language breakdown
+      {/*display the language breakdown*/}
       {data.languages.length > 0 && (
         <div className="rounded-2xl border border-white/[0.06] bg-[#111116] p-5">
           <h4 className="text-sm font-medium text-zinc-300 mb-4">
@@ -178,7 +176,7 @@ export default function CommitTimeline({ repoUrl }: CommitTimelineProps) {
       )}
 
       {/* Commit Timeline */}
-      //display the commits, if there are no commits, display a message saying no commits yet
+      {/*display the commits, if there are no commits, display a message saying no commits yet*/}
       {data.commits.length > 0 && (
         <div className="rounded-2xl border border-white/[0.06] bg-[#111116] p-5">
           <h4 className="text-sm font-medium text-zinc-300 mb-5 flex items-center gap-2">
@@ -191,7 +189,10 @@ export default function CommitTimeline({ repoUrl }: CommitTimelineProps) {
 
             <div className="space-y-0">
               {data.commits.map((commit, i) => (
-                <div key={commit.sha} className="relative flex gap-4 pb-6 last:pb-0">
+                <div
+                  key={commit.sha}
+                  className="relative flex gap-4 pb-6 last:pb-0"
+                >
                   {/* Dot */}
                   <div
                     className={`relative z-10 flex-shrink-0 h-[30px] w-[30px] rounded-full border-2 flex items-center justify-center ${

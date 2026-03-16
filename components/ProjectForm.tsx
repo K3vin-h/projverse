@@ -115,7 +115,7 @@ export default function ProjectForm({
   };
 
   return (
-    //brings up the project form
+    
     <form onSubmit={handleSubmit} className="space-y-8">
       {/* Project Name */}
       <div className="space-y-2">
