@@ -2,7 +2,7 @@ import Link from "next/link";
 import { prisma } from "@/lib/prisma";
 import ProjectGrid from "@/components/ProjectGrid";
 import { ArrowRight, Sparkles, TrendingUp, Users, Zap } from "lucide-react";
-
+//home page
 export default async function HomePage() {
   let trendingProjects: Array<{
     id: string;
@@ -32,6 +32,7 @@ export default async function HomePage() {
   let userCount = 0;
 
   try {
+    //displaying the projects from the database, 6 trending and 6 recent projects
     const [trending, recent, pCount, uCount] = await Promise.all([
       prisma.project.findMany({
         take: 6,
@@ -72,6 +73,7 @@ export default async function HomePage() {
   }
 
   return (
+    //this is the home page component, it is used to display the home page
     <div className="animate-fade-in">
       {/* Hero Section */}
       <section className="relative overflow-hidden">
@@ -222,7 +224,7 @@ export default async function HomePage() {
       <footer className="border-t border-white/[0.04] py-8">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row items-center justify-between gap-4">
           <p className="text-xs text-zinc-600">
-            © 2024 Projverse . Built for developers, by developers.
+            © 2026 Projverse . Built for developers, by developers.
           </p>
           <div className="flex items-center gap-6">
             <Link

@@ -5,7 +5,7 @@ import { useSession } from "next-auth/react";
 import { Send, MessageCircle } from "lucide-react";
 import { timeAgo } from "@/lib/utils";
 import Link from "next/link";
-
+//this is the comment interface, it is used to define the structure of a comment
 interface Comment {
   id: string;
   content: string;
@@ -23,11 +23,12 @@ interface CommentSectionProps {
 }
 
 export default function CommentSection({ projectId }: CommentSectionProps) {
+  //create state for comments, content, and loading, and session for data
   const { data: session } = useSession();
   const [comments, setComments] = useState<Comment[]>([]);
   const [content, setContent] = useState("");
   const [loading, setLoading] = useState(false);
-
+//fetch comments from the database using useEffect, using useeffect means it will run only once when the component is loaded
   useEffect(() => {
     const fetchComments = async () => {
       try {
@@ -43,11 +44,13 @@ export default function CommentSection({ projectId }: CommentSectionProps) {
 
     fetchComments();
   }, [projectId]);
-
+//handle submit function is used to submit the comment
   const handleSubmit = async (e: React.FormEvent) => {
+    //prevent default is used to prevent the default behavior of the form
     e.preventDefault();
+    //check if the content is not empty and not loading
     if (!content.trim() || loading) return;
-
+//set loading state to true
     setLoading(true);
     try {
       const res = await fetch("/api/comments", {
@@ -55,7 +58,7 @@ export default function CommentSection({ projectId }: CommentSectionProps) {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ projectId, content }),
       });
-
+//if the response is ok, then add the new comment to the comments state and clear the content
       if (res.ok) {
         const newComment = await res.json();
         setComments((prev) => [newComment, ...prev]);
@@ -64,11 +67,13 @@ export default function CommentSection({ projectId }: CommentSectionProps) {
     } catch (error) {
       console.error("Error posting comment:", error);
     } finally {
+      //set loading state to false
       setLoading(false);
     }
   };
 
   return (
+    //this is the comment section, it is used to display the comments and the comment form
     <div className="rounded-2xl border border-white/[0.06] bg-[#111116] p-6">
       <h3 className="text-base font-semibold text-white mb-5 flex items-center gap-2">
         <MessageCircle className="h-4 w-4 text-blue-400" />
@@ -79,6 +84,7 @@ export default function CommentSection({ projectId }: CommentSectionProps) {
       </h3>
 
       {/* Comment form */}
+      //check if the user is logged in, if yes then display the comment form, if no then display the login link
       {session ? (
         <form onSubmit={handleSubmit} className="mb-6">
           <div className="flex gap-3">
@@ -118,6 +124,7 @@ export default function CommentSection({ projectId }: CommentSectionProps) {
       )}
 
       {/* Comments list */}
+      //display the comments, if there are no comments, display a message saying no comments yet
       <div className="space-y-5">
         {comments.length === 0 ? (
           <p className="text-sm text-zinc-600 text-center py-6">

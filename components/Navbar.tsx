@@ -19,6 +19,7 @@ export default function Navbar() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   return (
+    //this is the navbar, it is used to display the navbar shown on top of every page
     <nav className="fixed top-0 left-0 right-0 z-50 border-b border-white/[0.06] bg-[#0a0a0f]/80 backdrop-blur-xl">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="flex h-16 items-center justify-between">
@@ -33,6 +34,7 @@ export default function Navbar() {
           </Link>
 
           {/* Desktop Nav */}
+          //this is the desktop nav, it is used to display the desktop nav, includes links to explore, community, and dashboard pages
           <div className="hidden md:flex items-center gap-1">
             <Link
               href="/explore"
@@ -57,6 +59,7 @@ export default function Navbar() {
           </div>
 
           {/* Right side */}
+          //this is the right side of the navbar, it is used to display the right side of the navbar, includes links to new project, profile, dashboard, and sign out if they are signed in
           <div className="hidden md:flex items-center gap-3">
             {session ? (
               <>
@@ -103,6 +106,7 @@ export default function Navbar() {
                 </div>
               </>
             ) : (
+              //this is the sign in and sign up buttons, if the user is not logged in, display the sign in and sign up buttons instead of the profile and dashboard buttons
               <>
                 <Link
                   href="/login"
@@ -122,6 +126,7 @@ export default function Navbar() {
           </div>
 
           {/* Mobile hamburger */}
+          //mobile version of the navbar, similar to desktop but with a hamburger menu that opens and closes when clicked
           <button
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
             className="md:hidden p-2 text-zinc-400 hover:text-white"

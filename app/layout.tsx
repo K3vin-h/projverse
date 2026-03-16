@@ -16,6 +16,7 @@ export const metadata: Metadata = {
   keywords: ["developer", "projects", "portfolio", "showcase", "open source"],
 };
 
+//this is the root layout component, it is used to display the root layout
 export default function RootLayout({
   children,
 }: Readonly<{

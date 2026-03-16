@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import { GitCommit, ExternalLink, User } from "lucide-react";
 import { timeAgo } from "@/lib/utils";
-
+//this is the commit interface, it is used to define the structure of a commit
 interface Commit {
   sha: string;
   fullSha: string;
@@ -15,6 +15,7 @@ interface Commit {
   url: string;
 }
 
+//this is the github data interface, it is used to define the structure of the github data
 interface GitHubData {
   stars: number;
   forks: number;
@@ -24,11 +25,13 @@ interface GitHubData {
   commits: Commit[];
 }
 
+//this is the commit timeline props interface, it is used to define the structure of the commit timeline props
 interface CommitTimelineProps {
   repoUrl: string;
 }
 
 export default function CommitTimeline({ repoUrl }: CommitTimelineProps) {
+  //create state for data, loading, and error
   const [data, setData] = useState<GitHubData | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
@@ -43,7 +46,7 @@ export default function CommitTimeline({ repoUrl }: CommitTimelineProps) {
           setError("Invalid GitHub URL");
           return;
         }
-
+//extract the owner and repo from the match
         const [, owner, repo] = match;
         const res = await fetch(`/api/github/${owner}/${repo}`);
         if (!res.ok) throw new Error("Failed to fetch");
@@ -61,6 +64,7 @@ export default function CommitTimeline({ repoUrl }: CommitTimelineProps) {
 
   if (loading) {
     return (
+      //this is the loading state, it is used to display the loading state while fetching the data
       <div className="rounded-2xl border border-white/[0.06] bg-[#111116] p-6">
         <div className="animate-pulse space-y-4">
           <div className="h-4 w-40 bg-white/[0.06] rounded" />
@@ -85,6 +89,7 @@ export default function CommitTimeline({ repoUrl }: CommitTimelineProps) {
   }
 
   return (
+    //this is the commit timeline, it is used to display the commits of the repository
     <div className="space-y-6">
       {/* Repo Stats */}
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
@@ -114,6 +119,7 @@ export default function CommitTimeline({ repoUrl }: CommitTimelineProps) {
       </div>
 
       {/* Language Breakdown */}
+      //display the language breakdown
       {data.languages.length > 0 && (
         <div className="rounded-2xl border border-white/[0.06] bg-[#111116] p-5">
           <h4 className="text-sm font-medium text-zinc-300 mb-4">
@@ -172,6 +178,7 @@ export default function CommitTimeline({ repoUrl }: CommitTimelineProps) {
       )}
 
       {/* Commit Timeline */}
+      //display the commits, if there are no commits, display a message saying no commits yet
       {data.commits.length > 0 && (
         <div className="rounded-2xl border border-white/[0.06] bg-[#111116] p-5">
           <h4 className="text-sm font-medium text-zinc-300 mb-5 flex items-center gap-2">

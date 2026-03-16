@@ -1,10 +1,10 @@
 import { clsx, type ClassValue } from "clsx";
 import { twMerge } from "tailwind-merge";
-
+//the cn function is used to merge the tailwind classes
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
 }
-
+//the formatDate function is used to format the date
 export function formatDate(date: Date | string): string {
   return new Date(date).toLocaleDateString("en-US", {
     month: "short",
@@ -13,6 +13,7 @@ export function formatDate(date: Date | string): string {
   });
 }
 
+//the timeAgo function is used to calculate the time difference between the current date and the given date
 export function timeAgo(date: Date | string): string {
   const now = new Date();
   const past = new Date(date);
@@ -29,6 +30,7 @@ export function timeAgo(date: Date | string): string {
   return formatDate(date);
 }
 
+//the truncate function is used to truncate the string, this means it will cut the string if it is longer than the given length
 export function truncate(str: string, length: number): string {
   if (str.length <= length) return str;
   return str.slice(0, length) + "...";

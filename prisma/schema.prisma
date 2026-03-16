@@ -1,5 +1,7 @@
 // This is your Prisma schema file,
 // learn more about it in the docs: https://pris.ly/d/prisma-schema
+//This is the schema for the postgresql database
+
 
 generator client {
   provider = "prisma-client-js"
@@ -9,7 +11,10 @@ datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
 }
+//connecting to the db
 
+//Authentication models required for next-auth is User, Account, Session, VerificationToken
+//user model stores the user personal information, and calls the other models
 model User {
   id            String    @id @default(cuid())
   name          String?
@@ -31,6 +36,7 @@ model User {
   comments  Comment[]
 }
 
+//account model stores the user account information, links user to OAuth providers and stores the OAuth tokens
 model Account {
   id                String  @id @default(cuid())
   userId            String
@@ -50,6 +56,7 @@ model Account {
   @@unique([provider, providerAccountId])
 }
 
+//session model stores the user session information, stores session tokens and session expiry dates
 model Session {
   id           String   @id @default(cuid())
   sessionToken String   @unique
@@ -59,6 +66,7 @@ model Session {
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
+//verification token model stores the verification tokens, used for email verification(sign in) and password reset
 model VerificationToken {
   identifier String
   token      String   @unique
@@ -67,6 +75,7 @@ model VerificationToken {
   @@unique([identifier, token])
 }
 
+//project model stores the project information, link the user who created the project, and stores likes and comments models
 model Project {
   id          String   @id @default(cuid())
   name        String
@@ -87,6 +96,7 @@ model Project {
   comments Comment[]
 }
 
+//like model stores the like information, link the user who liked the project, and link the project that was liked
 model Like {
   id        String   @id @default(cuid())
   userId    String
@@ -98,7 +108,7 @@ model Like {
 
   @@unique([userId, projectId])
 }
-
+//comment model stores the comment information, link the user who commented the project, and link the project that was commented
 model Comment {
   id        String   @id @default(cuid())
   userId    String

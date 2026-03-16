@@ -1,6 +1,7 @@
 import ProjectCard from "./ProjectCard";
-
+//this is the project grid props interface, it is used to define the structure of the project grid props
 interface ProjectGridProps {
+  //this is the projects array, it is used to define the projects array
   projects: Array<{
     id: string;
     name: string;
@@ -25,7 +26,7 @@ interface ProjectGridProps {
   }>;
   emptyMessage?: string;
 }
-
+//this is the project grid component, it is used to display the project grid which is projects from either the home page or the explore page
 export default function ProjectGrid({
   projects,
   emptyMessage = "No projects found",

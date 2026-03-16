@@ -4,7 +4,9 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { X, Plus, Upload, Link as LinkIcon, FileText, Loader2 } from "lucide-react";
 
+//this is the project form props interface, it is used to define the structure of the project form props
 interface ProjectFormProps {
+  //this is the initial data, it is used to define the initial data of the project form
   initialData?: {
     id?: string;
     name: string;
@@ -18,7 +20,7 @@ interface ProjectFormProps {
   };
   mode: "create" | "edit";
 }
-
+//provide the most popular languages and tags for the project form
 const POPULAR_LANGUAGES = [
   "TypeScript", "JavaScript", "Python", "Rust", "Go", "Java",
   "C++", "C#", "Ruby", "PHP", "Swift", "Kotlin", "Dart", "SQL",
@@ -29,6 +31,7 @@ const POPULAR_TAGS = [
   "DevOps", "Mobile", "Database", "Security", "Blockchain", "Game",
 ];
 
+//this is the project form component, it is used to display the project form
 export default function ProjectForm({
   initialData,
   mode,
@@ -47,7 +50,7 @@ export default function ProjectForm({
   });
   const [tagInput, setTagInput] = useState("");
   const [langInput, setLangInput] = useState("");
-
+//create funcitons to add and remove tags and languages
   const addTag = (tag: string) => {
     const trimmed = tag.trim();
     if (trimmed && !form.tags.includes(trimmed)) {
@@ -80,7 +83,7 @@ export default function ProjectForm({
       languages: prev.languages.filter((l) => l !== lang),
     }));
   };
-
+//handle the create and update of the project
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
@@ -112,6 +115,7 @@ export default function ProjectForm({
   };
 
   return (
+    //brings up the project form
     <form onSubmit={handleSubmit} className="space-y-8">
       {/* Project Name */}
       <div className="space-y-2">
@@ -290,7 +294,7 @@ export default function ProjectForm({
             onChange={(e) =>
               setForm((p) => ({ ...p, demoUrl: e.target.value }))
             }
-            placeholder="https://my-project.vercel.app"
+            placeholder="https://www.google.com/"
             className="w-full px-4 py-3 rounded-xl border border-white/[0.06] bg-white/[0.02] text-white placeholder-zinc-600 focus:outline-none focus:border-blue-500/50 focus:ring-1 focus:ring-blue-500/20 transition-all"
           />
         </div>
@@ -307,7 +311,7 @@ export default function ProjectForm({
           onChange={(e) =>
             setForm((p) => ({ ...p, docUrl: e.target.value }))
           }
-          placeholder="https://docs.my-project.com"
+          placeholder="https://www.google.com/"
           className="w-full px-4 py-3 rounded-xl border border-white/[0.06] bg-white/[0.02] text-white placeholder-zinc-600 focus:outline-none focus:border-blue-500/50 focus:ring-1 focus:ring-blue-500/20 transition-all"
         />
       </div>
@@ -331,7 +335,7 @@ export default function ProjectForm({
                 updated[i] = e.target.value;
                 setForm((p) => ({ ...p, screenshots: updated }));
               }}
-              placeholder="https://example.com/screenshot.png"
+              placeholder="https://www.google.com/"
               className="flex-1 px-4 py-2.5 rounded-xl border border-white/[0.06] bg-white/[0.02] text-white placeholder-zinc-600 focus:outline-none focus:border-blue-500/50 text-sm"
             />
             <button
