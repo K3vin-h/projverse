@@ -1,6 +1,6 @@
 "use client";
 
-import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { Heart, Eye, ExternalLink, Github } from "lucide-react";
 import { timeAgo, truncate } from "@/lib/utils";
 
@@ -49,9 +49,14 @@ const languageColors: Record<string, string> = {
 
 //this is the project card component, it is used to display the project card
 export default function ProjectCard({ project }: ProjectCardProps) {
+  const router = useRouter();
+
   return (
     //this is the project card, it is used to display the project card
-    <Link href={`/projects/${project.id}`} className="group block">
+    <div
+      onClick={() => router.push(`/projects/${project.id}`)}
+      className="group block cursor-pointer"
+    >
       <div className="relative rounded-2xl border border-white/[0.06] bg-[#111116] overflow-hidden transition-all duration-300 hover:border-white/[0.12] hover:bg-[#141419] hover:shadow-2xl hover:shadow-blue-500/5 hover:-translate-y-1">
         {/* Screenshot or gradient header */}
         {/*if the project has a screenshot, display it, otherwise display a gradient header*/}
@@ -185,6 +190,6 @@ export default function ProjectCard({ project }: ProjectCardProps) {
           )}
         </div>
       </div>
-    </Link>
+    </div>
   );
 }
