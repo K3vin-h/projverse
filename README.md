@@ -14,6 +14,13 @@ This project is designed to be a showcase website, where users (developers) can 
   - [Migrations](#migrations)
   - [Prisma Config](#prisma-config)
   - [Prisma Client Singleton](#prisma-client-singleton)
+- [Auth](#auth)
+  - [GitHub OAuth](#github-oauth)
+  - [Credentials](#credentials)
+  - [Session Strategy (JWT)](#session-strategy-jwt)
+  - [Type Augmentation](#type-augmentation)
+  - [Server vs. Client Session Access](#server-vs-client-session-access)
+- [Middleware](#middleware)
 
 ## Structure
 
@@ -149,3 +156,44 @@ The Prisma config file is used to configure the Prisma client by specifying the 
 ### Prisma Client Singleton
 
 One issue when working with Next.js development mode is that the Prisma client would constantly refresh, resulting in unnecessary new database connections due to a new Prisma client being created after each Next.js reload. To resolve this issue, the `lib/prisma.ts` file checks if the Prisma client is already initialized on the `globalThis` object (the global object that does not get reset after each Next.js reload). If the Prisma client already exists on the `globalThis` object, it is returned instead of creating a new one. Note that this file only checks for the Prisma client on the `globalThis` object when in development mode. Other files import the Prisma client from the `lib/prisma.ts` file instead of directly importing the Prisma client from the `prisma-client-js` provider, to avoid the issue as well.
+
+## Auth
+
+The application's authentication is handled using the NextAuth library v4. User and session data are saved to the Postgres database through the Prisma adapter instead of the default in-memory storage. There are two authentication methods: GitHub OAuth and credentials (email and password). The authentication configuration is stored in the `lib/auth.ts` file.
+
+### GitHub OAuth
+
+The user is redirected to the GitHub OAuth page to authenticate. Once authenticated, the user is redirected back to the application with an authorization code. This code is exchanged for an access token, which is then used to fetch the user's information from the GitHub API and store it in the database via the Prisma adapter.
+
+### Credentials
+
+The user logs in using their email and password. The password is hashed using bcrypt before being saved to the database. When checking the password on login, the submitted password is hashed and compared against the hashed password stored in the database.
+
+The user is brought to a custom-designed login page instead of the default NextAuth login page.
+
+The credentials sign-up process is handled by the `app/api/register/route.ts` file. This file handles registration for new users: the provided information is checked for validity (e.g. ensuring all fields are filled, and that the email is valid and not already in use), and the user's information is then stored in the database via the Prisma adapter. The password is hashed using bcrypt and undergoes 2^12 rounds of hashing before being stored. Once the user is registered, they are redirected to the login page along with a success message confirming their account has been created (201 status code).
+
+### Session Strategy (JWT)
+
+Session data is stored as a signed JSON Web Token (JWT) in the browser's cookies, instead of using a database session. This avoids having to constantly query the database for session data, since the JWT itself is stored client-side. The JWT can't be tampered with because it is signed with the app's NextAuth secret key, which is used to sign and verify every token.
+
+The only downside of this approach is that if the user's information changes in the database after logging in, the changes won't be reflected in their session until they log in again — the JWT is only generated or refreshed when the user signs in, or when their session expires.
+
+On the first sign-in, the app queries the database for the user's information and stores the relevant fields in the JWT. On later requests, only the JWT is used to authenticate the user, and the database is not queried again.
+
+The authentication process itself is handled by the `app/api/auth/[...nextauth]/route.ts` file. This file routes all authentication endpoints through NextAuth's built-in API handler, using the options configured in `lib/auth.ts`.
+
+### Type Augmentation
+
+The standard NextAuth session fields do not include the user's `username` or `id`. The `types/next-auth.d.ts` file augments NextAuth's built-in types to add these fields to the `Session` and `JWT` types. This prevents TypeScript from throwing an error when accessing the user's `username` and/or `id` on the session or token.
+
+### Server vs. Client Session Access
+
+The session is read differently depending on where the code runs:
+
+- **Server-side** — `getServerSession(authOptions)` is used in API routes and server components. It runs on the server and returns the session data directly, with no re-rendering involved.
+- **Client-side** — the `useSession()` hook is used in client components. It's reactive: the hook automatically updates the page to match the current login state and user information whenever it changes.
+
+## Middleware
+
+The middleware (`middleware.ts`) uses NextAuth's `withAuth` helper to protect the dashboard route, so only logged-in users can access it. It checks whether the user is logged in by verifying the JWT stored in the request's cookies. If the user is not logged in, they are redirected to the login page. The middleware is configured to protect all routes under the `/dashboard` path only.
