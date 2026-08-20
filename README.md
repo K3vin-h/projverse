@@ -21,6 +21,12 @@ This project is designed to be a showcase website, where users (developers) can 
   - [Type Augmentation](#type-augmentation)
   - [Server vs. Client Session Access](#server-vs-client-session-access)
 - [Middleware](#middleware)
+- [API Routes](#api-routes)
+  - [HTTP Methods](#http-methods)
+  - [Project Search and Creation](#project-search-and-creation)
+  - [Fetching, Updating, and Deleting Projects](#fetching-updating-and-deleting-projects)
+  - [Comments and Likes](#comments-and-likes)
+  - [GitHub Details](#github-details)
 
 ## Structure
 
@@ -197,3 +203,45 @@ The session is read differently depending on where the code runs:
 ## Middleware
 
 The middleware (`middleware.ts`) uses NextAuth's `withAuth` helper to protect the dashboard route, so only logged-in users can access it. It checks whether the user is logged in by verifying the JWT stored in the request's cookies. If the user is not logged in, they are redirected to the login page. The middleware is configured to protect all routes under the `/dashboard` path only.
+
+
+## API Routes
+
+### HTTP Methods
+
+The API follows standard REST conventions for HTTP methods:
+
+| Method   | Purpose          |
+| -------- | ----------------- |
+| `GET`    | Retrieving data    |
+| `POST`   | Creating data      |
+| `PUT`    | Updating data      |
+| `DELETE` | Deleting data      |
+
+### Project Search and Creation
+
+The project search and creation API lives in `app/api/projects/route.ts`.
+
+The `GET` handler powers project search, letting users search for projects by name, description, tags, and languages, and sort them by likes, views, or date created. As a user applies filters, the API combines them into a list of conditions before querying the database.
+
+When searching by a term, the API tries to match that term against the project's name or description. If a language filter is combined with a search term, the API merges both into a single list of conditions so that results match on both the term and the language. Sorting by likes is handled differently from sorting by views or date created: since likes aren't stored as a field on the project, the API queries by the number of related `Like` rows using Prisma's `_count` aggregate rather than sorting by a column directly. The filtered projects are then ordered according to the user's chosen sort method. The API also queries the total number of projects matching the search criteria, to support pagination. Both queries run in parallel via `Promise.all()`.
+
+The `POST` handler creates new projects. It first verifies the user is logged in by checking the JWT stored in their browser cookies, then validates that the required fields (name and description) are filled in before creating the project record in the database. The new project is returned to the user with a `201` status code (created).
+
+### Fetching, Updating, and Deleting Projects
+
+This API route lives in `app/api/projects/[id]/route.ts`.
+
+When a project is viewed, the API fetches it from the database and increments its view count by 1. If the user is logged in, they can like the project — the API first checks whether they've already liked it, to prevent liking the same project twice.
+
+If the project owner wants to edit their project, the API checks that the user is logged in (via the JWT in their browser cookies), that the project exists, and that the logged-in user's ID matches the project's author ID. Before saving the edit, it validates that the required fields (name and description) are filled in, then updates the project record and returns it with a `200` status code (updated). Deleting a project follows the same ownership and validation checks.
+
+### Comments and Likes
+
+The comment routes live in `app/api/comments/route.ts` (`POST`, for creating a comment) and `app/api/comments/[projectId]/route.ts` (`GET`, for fetching a project's comments). The like route lives in `app/api/like/route.ts` (`POST`). Both follow the same authentication and ownership patterns as the project routes above — verifying the user's JWT before allowing the action, and checking for an existing like before creating a new one.
+
+### GitHub Details
+
+The GitHub details API lives in `app/api/github/[owner]/[repo]/route.ts`. Given a project's repository owner and name, it fetches the repo's stars, forks, primary language, and recent commits from the GitHub API.
+
+When fetching the language breakdown, the API sums the byte counts for every language to get a total, then calculates each language's share by dividing its byte count by that total and rounding to the nearest whole percentage. When fetching commits, it pulls the repository's last 10 commits and maps each one to an object containing the commit's short SHA, message, author name, and commit date. All of these requests run in parallel via `Promise.all()`.
