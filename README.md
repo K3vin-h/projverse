@@ -27,6 +27,17 @@ This project is designed to be a showcase website, where users (developers) can 
   - [Fetching, Updating, and Deleting Projects](#fetching-updating-and-deleting-projects)
   - [Comments and Likes](#comments-and-likes)
   - [GitHub Details](#github-details)
+- [Pages](#pages)
+  - [Root Layout](#root-layout)
+  - [Home](#home)
+  - [Explore](#explore)
+  - [Community](#community)
+  - [Login](#login)
+  - [Signup](#signup)
+  - [Dashboard](#dashboard)
+    - [Project Actions](#project-actions)
+  - [Profile](#profile)
+  - [Project Detail](#project-detail)
 
 ## Structure
 
@@ -245,3 +256,52 @@ The comment routes live in `app/api/comments/route.ts` (`POST`, for creating a c
 The GitHub details API lives in `app/api/github/[owner]/[repo]/route.ts`. Given a project's repository owner and name, it fetches the repo's stars, forks, primary language, and recent commits from the GitHub API.
 
 When fetching the language breakdown, the API sums the byte counts for every language to get a total, then calculates each language's share by dividing its byte count by that total and rounding to the nearest whole percentage. When fetching commits, it pulls the repository's last 10 commits and maps each one to an object containing the commit's short SHA, message, author name, and commit date. All of these requests run in parallel via `Promise.all()`.
+
+## Pages
+
+Pages are either server-sided or client-sided, depending on what they need to do.
+
+| Type                           | Used when...                                                                                            | Examples                 |
+| ------------------------------ | -------------------------------------------------------------------------------------------------------- | ------------------------- |
+| Server-sided                   | A page just needs to fetch and display data — it can query Prisma directly and render straight to HTML without shipping that logic to the browser. | Home, Community, Profile |
+| Client-sided (`"use client"`)  | A page needs to be interactive — reacting to typing, clicks, or live session state.                       | Explore, Login, Signup   |
+
+### Root Layout `app/layout.tsx`
+
+Every page is rendered through the root layout. It sets the default metadata for the site (the browser tab's title and description, used for SEO) rather than a visible header on the page itself, wraps the app in the session provider so client-side components can access session data via the `useSession()` hook, and renders the navigation bar, which stays the same across every page since it sits outside the page content. The page content itself is rendered through the `children` prop, which Next.js fills in with whichever page the user is currently visiting.
+
+### Home `app/page.tsx`
+
+**Server-sided.** We search the database for the 6 most liked projects, the 6 most recently created projects, the total number of projects, and the total number of users, then display them on the homepage. This is done through a `Promise.all()` call, which runs all four queries in parallel.
+
+### Explore `app/explore/page.tsx`
+
+**Client-sided.** The user can search for projects by name, description, tags, and language, and sort them by recency, likes, or views. The search is done through a `GET` request to `app/api/projects/route.ts`, debounced by 300ms so the API isn't called on every keystroke. Results are paginated at 12 projects per page.
+
+### Community `app/community/page.tsx`
+
+**Server-sided.** Displays the 12 most recently created projects across the whole platform, most-recent first — similar to the explore page, but without the search and filter features.
+
+### Login `app/login/page.tsx`
+
+**Client-sided.** Lets the user log in using their email and password, or through GitHub OAuth. Login is handled entirely through NextAuth's `signIn()`. On success, the user is redirected to the dashboard; on failure, an inline error message is shown.
+
+### Signup `app/signup/page.tsx`
+
+**Client-sided.** Lets the user sign up using their email and password. Unlike login, sign up is handled through a custom route, `app/api/register/route.ts` (described in [Credentials](#credentials)). Once the account is created, the user is automatically signed in and redirected to the dashboard.
+
+### Dashboard `app/dashboard/page.tsx`
+
+**Server-sided, protected.** Before loading the page, we check whether the user is logged in. If they are, we display their projects in order of creation, along with stats like total projects, total views, likes, and comments. Each project is shown as a card with its name and description, plus buttons to create, edit, and delete projects.
+
+#### Project Actions
+
+The create, edit, and delete buttons each have their own file and API route behind them: creating lives at `app/dashboard/new/page.tsx`, editing at `app/dashboard/edit/[id]/page.tsx` (both using the shared `ProjectForm` component), and deleting through the `DeleteProjectButton` client component.
+
+### Profile `app/profile/[id]/page.tsx`
+
+**Server-sided, public.** Displays a user's bio, GitHub and website links, join date, and all of their published projects.
+
+### Project Detail `app/projects/[id]/page.tsx`
+
+**Server-sided shell, client-sided content.** The page itself just extracts the project `id` from the URL and hands it off to `ProjectDetailClient`, a client component that shows the project's screenshots, description, tags, languages, GitHub repo stats (via [GitHub Details](#github-details)), etc.
